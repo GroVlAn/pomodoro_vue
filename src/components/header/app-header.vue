@@ -36,7 +36,7 @@ export default defineComponent({
 .header {
   width: 100%;
   height: 100px;
-  background-color: #ff5a5a;
+  background-color: var(--c_main);
 }
 
 .header__wrapper {

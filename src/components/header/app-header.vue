@@ -18,13 +18,8 @@ import TopNavBar from '../menu/top-nav-bar.vue';
 import { TLink } from '../menu/types';
 
 export default defineComponent({
-  data() {
-    return {
-      topMenu: menu as TLink[],
-    };
-  },
   setup() {
-    return {};
+    return { topMenu: menu as TLink[] };
   },
   components: {
     TopNavBar,

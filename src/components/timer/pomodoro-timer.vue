@@ -2,21 +2,21 @@
   <div class="pomodoro_timer">
     <div class="pomodoro_timer__wrapper">
       <div class="pomodoro_timer__timer">
-        <div class="pomodoro_timer__current_time">{{ pretyTime }}</div>
+        <div class="pomodoro_timer__current_time">{{ state.stringTime }}</div>
       </div>
       <div class="pomodoro_timer__buttons">
         <div class="pomodoro_timer__button">
           <button
             class="btn"
             @click="start"
-            v-show="!isRunnitng"
+            v-show="!state.isRunnitng"
           >
             Start
           </button>
           <button
             class="btn"
             @click="pause"
-            v-show="isRunnitng"
+            v-show="state.isRunnitng"
           >
             Pause
           </button>
@@ -35,68 +35,78 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { ref } from 'vue';
+import { defineComponent, reactive, watch } from 'vue';
+import { prettyTime } from '../../shared/api/helpers/timeHelper';
 
 export default defineComponent({
   props: {
     startTime: Number,
   },
   setup(props) {
-    return {
-      currentTime: ref(props.startTime),
+    const state = reactive({
+      currentTime: props.startTime,
       initialTime: props.startTime,
-      timer: ref(0),
-      isRunnitng: ref(false),
+      timer: 0,
+      isRunnitng: false,
+      stringTime: prettyTime(props.startTime ?? 0),
+    });
+
+    watch(
+      () => props.startTime,
+      (value) => {
+        if (state.isRunnitng && state.currentTime != props.startTime) {
+          state.isRunnitng = false;
+          clearInterval(state.timer);
+          state.timer = 0;
+        }
+        state.currentTime = value;
+        state.initialTime = value;
+        state.stringTime = prettyTime(value ?? 0);
+      },
+    );
+
+    watch(
+      () => state.currentTime,
+      (value) => {
+        state.currentTime = value;
+        state.stringTime = prettyTime(value ?? 0);
+      },
+    );
+
+    return {
+      state,
     };
-  },
-  computed: {
-    pretyTime() {
-      if (!this.currentTime) {
-        return '00:00:00';
-      }
-      const hours = Math.floor(this.currentTime / 3600);
-      const remainderHours = this.currentTime - hours * 3600;
-      const minutes = Math.floor(remainderHours / 60);
-      const seconds = remainderHours - minutes * 60;
-
-      const strTimer = {
-        hours: Math.floor(hours / 10) == 0 ? `0${hours}` : hours,
-        minutes: Math.floor(minutes / 10) == 0 ? `0${minutes}` : minutes,
-        seconds: Math.floor(seconds / 10) == 0 ? `0${seconds}` : seconds,
-      };
-
-      return `${strTimer.hours}:${strTimer.minutes}:${strTimer.seconds}`;
-    },
   },
   methods: {
     start() {
-      if (this.timer == 0) {
-        this.isRunnitng = true;
+      if (this.state.timer == 0) {
+        this.state.isRunnitng = true;
 
-        this.timer = setInterval(() => {
-          if (!this.currentTime) {
-            this.timer = 0;
+        this.state.timer = setInterval(() => {
+          if (!this.state.currentTime) {
+            this.state.timer = 0;
+            this.$emit('nextSegment');
             return;
           }
-          this.currentTime--;
+
+          this.state.currentTime--;
         }, 1000);
       }
     },
     stop() {
-      if (!this.currentTime) return;
+      if (!this.state.currentTime) return;
 
-      this.isRunnitng = false;
-      clearInterval(this.timer);
-      this.timer = 0;
-      this.currentTime = this.initialTime;
+      this.state.isRunnitng = false;
+      clearInterval(this.state.timer);
+      this.state.timer = 0;
+      this.state.currentTime = this.state.initialTime;
     },
     pause() {
-      if (!this.currentTime) return;
+      if (!this.state.currentTime) return;
 
-      this.isRunnitng = false;
-      clearInterval(this.timer);
-      this.timer = 0;
+      this.state.isRunnitng = false;
+      clearInterval(this.state.timer);
+      this.state.timer = 0;
     },
   },
 });

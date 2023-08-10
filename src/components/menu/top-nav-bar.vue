@@ -3,8 +3,8 @@
     <router-link
       :to="item.url"
       class="nav__link"
-      v-for="item in menu"
-      :key="item.title"
+      v-for="(item, key) in menu"
+      :key="key"
     >
       {{ item.title }}
     </router-link>
@@ -17,7 +17,7 @@ import { TLink } from './types';
 
 export default defineComponent({
   props: {
-    menu: [] as PropType<TLink[]>,
+    menu: Array as PropType<TLink[]>,
   },
   emits: ['menu'],
   setup() {

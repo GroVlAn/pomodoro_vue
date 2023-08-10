@@ -2,10 +2,7 @@
   <div class="container">
     <div>
       <div class="section">
-        <pomodoro-timer
-          class="white_conteiner"
-          :startTime="100000"
-        ></pomodoro-timer>
+        <app-pomodoro></app-pomodoro>
       </div>
     </div>
   </div>
@@ -13,14 +10,15 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import PomodoroTimer from '../../components/timer/pomodoro-timer.vue';
+
+import AppPomodoro from '../../components/timer/app-pomodoro.vue';
 
 export default defineComponent({
   setup() {
     return {};
   },
   components: {
-    PomodoroTimer,
+    'app-pomodoro': AppPomodoro,
   },
 });
 </script>

@@ -7,7 +7,7 @@
           v-for="(item, key) in segments"
           :key="key"
           :style="{ backgroundColor: item.color }"
-          @click="changeCurrentSegment(item.name)"
+          @click="changeCurrentSegment(key)"
         >
           {{ item.name }}
           <a
@@ -32,8 +32,8 @@ export default defineComponent({
     return {};
   },
   methods: {
-    changeCurrentSegment(name: string) {
-      this.$emit('changeCurrentSegment', name);
+    changeCurrentSegment(key: number) {
+      this.$emit('changeCurrentSegment', key);
     },
   },
 });

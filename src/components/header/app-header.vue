@@ -1,5 +1,8 @@
 <template>
-  <header class="header">
+  <header
+    class="header"
+    :style="{ backgroundColor: activeColor }"
+  >
     <div class="header__wrapper">
       <router-link
         to="/"
@@ -12,14 +15,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { menu } from './menu';
 import TopNavBar from '../menu/top-nav-bar.vue';
 import { TLink } from '../menu/types';
+import { GlobalState } from '@/shared/api/state/state';
+
+const globalState = GlobalState.getInstance();
 
 export default defineComponent({
   setup() {
-    return { topMenu: menu as TLink[] };
+    const activeColor = computed(() => globalState.getState?.activeColor);
+    return {
+      activeColor,
+      topMenu: menu as TLink[],
+    };
   },
   components: {
     TopNavBar,
@@ -31,7 +41,7 @@ export default defineComponent({
 .header {
   width: 100%;
   height: 100px;
-  background-color: var(--c_main);
+  transition: background-color 0.2s ease-in;
 }
 
 .header__wrapper {

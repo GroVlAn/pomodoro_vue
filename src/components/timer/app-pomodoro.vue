@@ -19,16 +19,18 @@ import { TSegment } from './types';
 
 import PomodoroTimer from '../../components/timer/pomodoro-timer.vue';
 import PomodoroSegments from '../../components/timer/pomodoro-segments.vue';
+import { GlobalState } from '@/shared/api/state/state';
+import { timeToSecond } from '@/shared/api/helpers/timeHelper';
 
 const segmetns: TSegment[] = [
   {
     name: 'Focus',
-    time: '00:25:00',
+    time: '00:00:05',
     color: '#d34b4b',
   },
   {
     name: 'Break',
-    time: '00:05:00',
+    time: '00:00:10',
     color: '#4bb8d3',
   },
   {
@@ -42,25 +44,37 @@ const segmetnsTime = new SegmetnsTime(segmetns);
 
 segmetnsTime.SetQueue = [0, 1, 0, 1, 2];
 
+const firstSegment = segmetnsTime.getSegment(0);
+
+const globalState = GlobalState.getInstance();
+
 export default defineComponent({
   setup() {
     return {
-      currentTime: ref(segmetnsTime.getTime('Focus')),
+      currentTime: ref(timeToSecond(firstSegment.time)),
       segments: ref(segmetns),
     };
   },
   methods: {
-    changeCurrentSegment(name: string) {
-      if (!name) return;
+    changeCurrentSegment(key: number) {
       try {
-        this.currentTime = segmetnsTime.getTime(name);
+        const currentSegment = segmetnsTime.getSegment(key);
+        this.currentTime = timeToSecond(currentSegment.time);
+
+        if (!globalState.state) return;
+
+        globalState.state.activeColor = currentSegment.color;
       } catch (e) {
         console.log(e);
       }
     },
     nextSegment() {
       try {
-        this.currentTime = segmetnsTime.getNext();
+        const currentSegment = segmetnsTime.getNext();
+
+        this.currentTime = timeToSecond(currentSegment.time);
+        if (!globalState.state) return;
+        globalState.state.activeColor = currentSegment.color;
       } catch (e) {
         console.log(e);
       }

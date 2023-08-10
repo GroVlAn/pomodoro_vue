@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, watch } from 'vue';
+import { defineComponent, reactive, ref, watch } from 'vue';
 import { prettyTime } from '../../shared/api/helpers/timeHelper';
 
 export default defineComponent({
@@ -46,22 +46,31 @@ export default defineComponent({
     const state = reactive({
       currentTime: props.startTime,
       initialTime: props.startTime,
-      timer: 0,
       isRunnitng: false,
       stringTime: prettyTime(props.startTime ?? 0),
     });
+    const timer = ref(0);
 
     watch(
       () => props.startTime,
       (value) => {
         if (state.isRunnitng && state.currentTime != props.startTime) {
           state.isRunnitng = false;
-          clearInterval(state.timer);
-          state.timer = 0;
+          // clearInterval(timer.value);
         }
         state.currentTime = value;
         state.initialTime = value;
         state.stringTime = prettyTime(value ?? 0);
+      },
+    );
+
+    watch(
+      () => state.isRunnitng,
+      (value) => {
+        if (!value) {
+          clearInterval(timer.value);
+          timer.value = 0;
+        }
       },
     );
 
@@ -75,38 +84,32 @@ export default defineComponent({
 
     return {
       state,
+      timer,
     };
   },
   methods: {
     start() {
-      if (this.state.timer == 0) {
+      if (this.timer == 0) {
         this.state.isRunnitng = true;
 
-        this.state.timer = setInterval(() => {
+        this.timer = setInterval(() => {
           if (!this.state.currentTime) {
-            this.state.timer = 0;
-            this.$emit('nextSegment');
             return;
           }
 
           this.state.currentTime--;
+          if (this.state.currentTime === 0) {
+            this.$emit('nextSegment');
+          }
         }, 1000);
       }
     },
     stop() {
-      if (!this.state.currentTime) return;
-
       this.state.isRunnitng = false;
-      clearInterval(this.state.timer);
-      this.state.timer = 0;
       this.state.currentTime = this.state.initialTime;
     },
     pause() {
-      if (!this.state.currentTime) return;
-
       this.state.isRunnitng = false;
-      clearInterval(this.state.timer);
-      this.state.timer = 0;
     },
   },
 });

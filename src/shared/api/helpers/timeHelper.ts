@@ -1,4 +1,4 @@
-export const prettyTime = (time: number) => {
+export const prettyTime = (time: number): string => {
   if (!time) {
     return '00:00:00';
   }
@@ -14,6 +14,16 @@ export const prettyTime = (time: number) => {
   };
 
   return `${strTimer.hours}:${strTimer.minutes}:${strTimer.seconds}`;
+};
+
+export const timeToSecond = (timeString: string): number => {
+  const partsTime = timeString.split(':');
+
+  const hours = Number.parseInt(partsTime[0]);
+  const minutes = Number.parseInt(partsTime[1]);
+  const seconds = Number.parseInt(partsTime[2]);
+
+  return hours * 3600 + minutes * 60 + seconds;
 };
 
 export const TIME_PATTERN = '^(([0-9][0-9]):([0-9][0-9]):([0-9][0-9]))$';

@@ -3,3 +3,8 @@ export type TSegment = {
   time: string;
   color: string;
 };
+
+export type TEventNextSegment = {
+  isRun: boolean;
+  isNextSegment: boolean;
+};

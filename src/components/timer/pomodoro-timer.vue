@@ -2,21 +2,23 @@
   <div class="pomodoro_timer">
     <div class="pomodoro_timer__wrapper">
       <div class="pomodoro_timer__timer">
-        <div class="pomodoro_timer__current_time">{{ state.stringTime }}</div>
+        <div class="pomodoro_timer__current_time">
+          {{ state.stringTime }}
+        </div>
       </div>
       <div class="pomodoro_timer__buttons">
         <div class="pomodoro_timer__button">
           <button
             class="btn"
             @click="start"
-            v-show="!state.isRunnitng"
+            v-show="!isRunning"
           >
             Start
           </button>
           <button
             class="btn"
             @click="pause"
-            v-show="state.isRunnitng"
+            v-show="isRunning"
           >
             Pause
           </button>
@@ -37,16 +39,17 @@
 <script lang="ts">
 import { defineComponent, reactive, ref, watch } from 'vue';
 import { prettyTime } from '../../shared/api/helpers/timeHelper';
+import { TEventNextSegment } from './types';
 
 export default defineComponent({
   props: {
     startTime: Number,
+    isRunning: Boolean,
   },
-  setup(props) {
+  setup(props, { emit }) {
     const state = reactive({
       currentTime: props.startTime,
       initialTime: props.startTime,
-      isRunnitng: false,
       stringTime: prettyTime(props.startTime ?? 0),
     });
     const timer = ref(0);
@@ -54,10 +57,6 @@ export default defineComponent({
     watch(
       () => props.startTime,
       (value) => {
-        if (state.isRunnitng && state.currentTime != props.startTime) {
-          state.isRunnitng = false;
-          // clearInterval(timer.value);
-        }
         state.currentTime = value;
         state.initialTime = value;
         state.stringTime = prettyTime(value ?? 0);
@@ -65,7 +64,7 @@ export default defineComponent({
     );
 
     watch(
-      () => state.isRunnitng,
+      () => props.isRunning,
       (value) => {
         if (!value) {
           clearInterval(timer.value);
@@ -82,35 +81,37 @@ export default defineComponent({
       },
     );
 
+    const start = () => {
+        if (timer.value == 0) {
+          emit('nextSegment', { isRun: true, isNextSegment: false } as TEventNextSegment);
+
+          timer.value = setInterval(() => {
+            if (!state.currentTime) {
+              return;
+            }
+
+            state.currentTime--;
+            if (state.currentTime === 0) {
+              emit('nextSegment', { isRun: true, isNextSegment: true } as TEventNextSegment);
+            }
+          }, 1000);
+        }
+      },
+      stop = () => {
+        state.currentTime = state.initialTime;
+        emit('nextSegment', { isRun: false, isNextSegment: false } as TEventNextSegment);
+      },
+      pause = () => {
+        emit('nextSegment', { isRun: false, isNextSegment: false } as TEventNextSegment);
+      };
+
     return {
+      start,
+      pause,
+      stop,
       state,
       timer,
     };
-  },
-  methods: {
-    start() {
-      if (this.timer == 0) {
-        this.state.isRunnitng = true;
-
-        this.timer = setInterval(() => {
-          if (!this.state.currentTime) {
-            return;
-          }
-
-          this.state.currentTime--;
-          if (this.state.currentTime === 0) {
-            this.$emit('nextSegment');
-          }
-        }, 1000);
-      }
-    },
-    stop() {
-      this.state.isRunnitng = false;
-      this.state.currentTime = this.state.initialTime;
-    },
-    pause() {
-      this.state.isRunnitng = false;
-    },
   },
 });
 </script>

@@ -19,7 +19,6 @@ export default defineComponent({
   props: {
     menu: Array as PropType<TLink[]>,
   },
-  emits: ['menu'],
   setup() {
     return {};
   },

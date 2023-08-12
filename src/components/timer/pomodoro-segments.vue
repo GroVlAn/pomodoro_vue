@@ -28,13 +28,13 @@ export default defineComponent({
   props: {
     segments: Array as PropType<TSegment[]>,
   },
-  setup() {
-    return {};
-  },
-  methods: {
-    changeCurrentSegment(key: number) {
-      this.$emit('changeCurrentSegment', key);
-    },
+  setup(_props, { emit }) {
+    const changeCurrentSegment = (key: number) => {
+      emit('changeCurrentSegment', key);
+    };
+    return {
+      changeCurrentSegment,
+    };
   },
 });
 </script>

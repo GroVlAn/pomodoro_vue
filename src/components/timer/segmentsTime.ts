@@ -14,7 +14,7 @@ export class SegmetnsTime {
     this.queue = [];
   }
 
-  public set SetQueue(items: Array<number>) {
+  public set setQueue(items: Array<number>) {
     if (items.length < 2) {
       throw new MinimalRangeError('Segment queue must have more 2 items');
     }

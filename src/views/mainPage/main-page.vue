@@ -1,10 +1,8 @@
 <template>
   <div class="container">
-    <div>
-      <div class="section">
-        <app-pomodoro></app-pomodoro>
-      </div>
-    </div>
+    <section class="section">
+      <app-pomodoro></app-pomodoro>
+    </section>
   </div>
 </template>
 

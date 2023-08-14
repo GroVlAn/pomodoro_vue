@@ -1,0 +1,13 @@
+.form_error {
+  font-weight: 400;
+  font-size: 14px;
+  color: #e63e3e;
+
+  &.this--mt {
+    margin-top: 5px;
+  }
+
+  &.this--mb {
+    margin-bottom: 10px;
+  }
+}

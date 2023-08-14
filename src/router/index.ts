@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import MainPage from '../views/mainPage/main-page.vue';
 import StatisticsPage from '../views/statistics/statistics-page.vue';
 import SignIn from '../views/auth/sign-in.vue';
@@ -13,31 +13,23 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/statistics',
     name: 'statistics',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => StatisticsPage,
+    component: StatisticsPage,
   },
   {
     path: '/auth/sign-in',
     name: 'sign-in',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => SignIn,
+    component: SignIn,
   },
   {
     path: '/auth/sign-up',
     name: 'sign-up',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => SignUp,
+    component: SignUp,
   },
+  { path: '/:pathMatch(.*)*', redirect: { path: '/' } },
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes,
 });
 

@@ -14,10 +14,13 @@
       </div>
       <div class="header__right">
         <top-nav-bar :menu="topMenu"></top-nav-bar>
-        <div class="header__login">
+        <div
+          class="header__login"
+          v-if="!isLoggin"
+        >
           <router-link
             to="/auth/sign-in"
-            class="header__login_link"
+            class="header__auth_link"
           >
             Войти
             <svg
@@ -29,26 +32,46 @@
             </svg>
           </router-link>
         </div>
+        <div
+          v-else
+          class="header__logout"
+        >
+          <button
+            @click.prevent="logout"
+            type="button"
+            class="header__auth_link"
+          >
+            Выйти
+          </button>
+        </div>
       </div>
     </div>
   </header>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { menu } from './menu';
 import TopNavBar from '../menu/top-nav-bar.vue';
 import { TLink } from '../menu/types';
 import { globalStore } from '@/shared/api/store/store';
+import { userLogout } from './service';
 
 export default defineComponent({
   setup() {
     const store = globalStore;
     const topMenu = menu as TLink[];
+    const isLoggin = computed(() => !!globalStore.userId);
+
+    const logout = () => {
+      userLogout();
+    };
 
     return {
+      logout,
       store,
       topMenu,
+      isLoggin,
     };
   },
   components: {
@@ -84,7 +107,7 @@ export default defineComponent({
   color: #ffffff;
 }
 
-.header__login_link {
+.header__auth_link {
   display: flex;
   align-items: center;
   background-color: var(--c_header_btn);

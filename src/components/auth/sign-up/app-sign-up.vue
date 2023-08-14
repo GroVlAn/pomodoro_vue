@@ -2,10 +2,19 @@
   <div class="white_conteiner sign_up">
     <h1>Регистрация</h1>
     <div class="sign_up__wrapper">
-      <form class="sign_up__form">
+      <form
+        @submit.prevent="signUp"
+        class="sign_up__form"
+      >
+        <div
+          v-show="errors.form"
+          class="form_error this--mb"
+        >
+          {{ errors.form }}
+        </div>
         <div class="sign_up__field">
           <label
-            for="sign-in-name"
+            for="sign-up-name"
             class="sign_up__label"
           >
             Логин
@@ -13,13 +22,20 @@
           <input
             type="name"
             name="username"
-            id="sign-in-name"
+            v-model="user.username"
+            id="sign-up-name"
             class="sign_up__input"
           />
+          <div
+            v-show="errors.username"
+            class="form_error this--mt"
+          >
+            {{ errors.username }}
+          </div>
         </div>
         <div class="sign_up__field">
           <label
-            for="sign-in-email"
+            for="sign-up-email"
             class="sign_up__label"
           >
             Email
@@ -27,13 +43,20 @@
           <input
             type="email"
             name="email"
-            id="sign-in-email"
+            v-model="user.email"
+            id="sign-up-email"
             class="sign_up__input"
           />
+          <div
+            v-show="errors.email"
+            class="form_error this--mt"
+          >
+            {{ errors.email }}
+          </div>
         </div>
         <div class="sign_up__field">
           <label
-            for="sign-in-password"
+            for="sign-up-password"
             class="sign_up__label"
           >
             Пароль
@@ -41,9 +64,38 @@
           <input
             type="password"
             name="password"
-            id="sign-in-password"
+            v-model="user.password"
+            id="sign-up-password"
             class="sign_up__input"
           />
+          <div
+            v-for="(error, key) in errors.password"
+            :key="key"
+            class="form_error this--mt"
+          >
+            {{ error }}
+          </div>
+        </div>
+        <div class="sign_up__field">
+          <label
+            for="sign-up-confirm-password"
+            class="sign_up__label"
+          >
+            Подтверждение пароля
+          </label>
+          <input
+            type="password"
+            name="confirmPassword"
+            v-model="confirmPassword"
+            id="sign-up-confirm-password"
+            class="sign_up__input"
+          />
+          <div
+            v-show="errors.password"
+            class="form_error this--mt"
+          >
+            {{ errors.confirmPassword }}
+          </div>
         </div>
         <div class="sign_up__field">
           <button
@@ -60,11 +112,107 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { TUser } from '@/shared/types/user';
+import { defineComponent, reactive, ref } from 'vue';
+import { passwordValidator, register } from './service';
+import router from '@/router';
+import { TErroResponse } from '@/shared/api/store/types';
+import { AxiosError } from 'axios';
 
 export default defineComponent({
   setup() {
-    return {};
+    const user = ref({
+      id: null,
+      username: '',
+      email: '',
+      password: '',
+      role_id: 1,
+    } as TUser);
+    const confirmPassword = ref('');
+    const errors = reactive({
+      username: '',
+      password: [] as Array<string>,
+      email: '',
+      confirmPassword: '',
+      form: '',
+    });
+
+    const errorHandler = (response: TErroResponse) => {
+      if (response.status === 422) {
+        if (response.data.detail instanceof Array) {
+          response.data.detail.forEach((item) => {
+            if (item.loc[1] === 'email') {
+              errors.email = 'Некорректный email';
+            }
+          });
+        }
+      }
+
+      if (response.status === 400) {
+        if (response.data.detail === 'REGISTER_USER_ALREADY_EXISTS') {
+          errors.email = 'Пользователь уже существует';
+        }
+      }
+    };
+
+    const validateFields = () => {
+      const emptyField = 'Пустое поле';
+
+      const { username, email, password } = user.value;
+
+      errors.username = username === '' ? emptyField : '';
+      errors.email = email === '' ? emptyField : '';
+      errors.confirmPassword = confirmPassword.value === '' ? emptyField : '';
+
+      const passwordErrors = passwordValidator(password);
+      errors.password = passwordErrors.length > 0 ? passwordErrors : [];
+
+      if (user.value.password != confirmPassword.value) {
+        errors.confirmPassword = 'Пароли не совпадают';
+      }
+
+      return (
+        errors.username === '' &&
+        errors.email === '' &&
+        errors.password.length === 0 &&
+        errors.confirmPassword === ''
+      );
+    };
+
+    const signUp = async () => {
+      errors.form = '';
+      errors.username = '';
+      errors.email = '';
+      errors.password = [];
+      errors.confirmPassword = '';
+
+      if (!validateFields()) {
+        return;
+      }
+
+      try {
+        const response = await register(user.value);
+
+        if (response.status !== 201) {
+          return;
+        }
+
+        router.replace('/auth/sign-in');
+      } catch (error) {
+        console.log(error);
+
+        if (error instanceof AxiosError) {
+          errorHandler(error.response as TErroResponse);
+        }
+      }
+    };
+
+    return {
+      signUp,
+      user,
+      confirmPassword,
+      errors,
+    };
   },
 });
 </script>

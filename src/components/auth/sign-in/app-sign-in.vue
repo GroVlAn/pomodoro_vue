@@ -122,7 +122,7 @@ export default defineComponent({
       if (!validateForm()) {
         return;
       }
-
+      globalStore.isLoading = true;
       try {
         const responseLogin = await login(email.value, password.value);
 
@@ -151,6 +151,8 @@ export default defineComponent({
         if (error instanceof AxiosError) {
           errorHandler(error.response as TErroResponse);
         }
+      } finally {
+        globalStore.isLoading = false;
       }
     };
 

@@ -63,8 +63,21 @@ export default defineComponent({
     const topMenu = menu as TLink[];
     const isLoggin = computed(() => !!globalStore.userId);
 
-    const logout = () => {
-      userLogout();
+    const logout = async () => {
+      globalStore.isLoading = true;
+      try {
+        const response = await userLogout();
+
+        if (response.status === 204) {
+          localStorage.removeItem('user');
+          globalStore.userId = null;
+        }
+      } catch {
+        localStorage.removeItem('user');
+        globalStore.userId = null;
+      } finally {
+        globalStore.isLoading = false;
+      }
     };
 
     return {

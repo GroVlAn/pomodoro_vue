@@ -118,6 +118,7 @@ import { passwordValidator, register } from './service';
 import router from '@/router';
 import { TErroResponse } from '@/shared/api/store/types';
 import { AxiosError } from 'axios';
+import { globalStore } from '@/shared/api/store/store';
 
 export default defineComponent({
   setup() {
@@ -190,6 +191,8 @@ export default defineComponent({
         return;
       }
 
+      globalStore.isLoading = true;
+
       try {
         const response = await register(user.value);
 
@@ -204,6 +207,8 @@ export default defineComponent({
         if (error instanceof AxiosError) {
           errorHandler(error.response as TErroResponse);
         }
+      } finally {
+        globalStore.isLoading = false;
       }
     };
 

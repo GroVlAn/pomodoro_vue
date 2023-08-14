@@ -5,4 +5,5 @@ import { TState } from './types';
 export const globalStore = reactive({
   activeColor: '#ff5a5a',
   userId: localStorage.getItem('user') ?? null,
+  isLoading: false,
 } as TState);

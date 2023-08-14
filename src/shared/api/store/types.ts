@@ -1,6 +1,7 @@
 export type TState = {
   activeColor: string;
   userId: string | null;
+  isLoading: boolean;
 };
 
 type TDetail = {

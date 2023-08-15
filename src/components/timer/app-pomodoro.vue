@@ -4,6 +4,7 @@
       :segments="segments"
       @changeCurrentSegment="changeCurrentSegment"
     ></pomodoro-segments>
+    <app-timer-animation :isRunning="isRunning"></app-timer-animation>
     <pomodoro-timer
       @nextSegment="nextSegment($event)"
       :isRunning="isRunning"
@@ -23,10 +24,12 @@ import { timeToSecond } from '@/shared/api/helpers/timeHelper';
 import { globalStore } from '@/shared/api/store/store';
 import { segmetns } from './data';
 import { TEventNextSegment } from './types';
+import AppTimerAnimation from './app-timer-animation.vue';
 
 export default defineComponent({
   setup() {
     const segmetnsTime = new SegmetnsTime(segmetns);
+    const audioStarTimer = new Audio('/sounds/start.mp3');
 
     try {
       segmetnsTime.setQueue = [0, 1, 0, 1, 2];
@@ -51,6 +54,14 @@ export default defineComponent({
     const nextSegment = (eventNextSegment: TEventNextSegment) => {
       isRunning.value = eventNextSegment.isRun;
 
+      if (isRunning.value) {
+        try {
+          audioStarTimer.play();
+        } catch {
+          console.log('audio file not found');
+        }
+      }
+
       if (eventNextSegment.isNextSegment) {
         const currentSegment = segmetnsTime.getNext();
 
@@ -71,8 +82,9 @@ export default defineComponent({
   components: {
     'pomodoro-timer': PomodoroTimer,
     'pomodoro-segments': PomodoroSegments,
+    'app-timer-animation': AppTimerAnimation,
   },
 });
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped></style>

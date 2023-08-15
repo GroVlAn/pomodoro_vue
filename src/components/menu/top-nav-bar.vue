@@ -3,7 +3,7 @@
     <router-link
       :to="item.url"
       class="nav__link"
-      v-for="(item, key) in menu"
+      v-for="(item, key) in navBar"
       :key="key"
     >
       {{ item.title }}
@@ -12,15 +12,24 @@
 </template>
 
 <script lang="ts">
-import { PropType, defineComponent } from 'vue';
+import { PropType, computed, defineComponent } from 'vue';
 import { TLink } from './types';
+import { globalStore } from '@/shared/api/store/store';
 
 export default defineComponent({
   props: {
     menu: Array as PropType<TLink[]>,
   },
-  setup() {
-    return {};
+  setup(props) {
+    const navBar = computed(() => {
+      if (!globalStore.userId) {
+        return props.menu?.filter((item) => item.url !== '/statistics');
+      }
+      return props.menu;
+    });
+    return {
+      navBar,
+    };
   },
 });
 </script>

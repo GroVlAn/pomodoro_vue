@@ -149,6 +149,10 @@ export default defineComponent({
         router.replace('/');
       } catch (error) {
         if (error instanceof AxiosError) {
+          if (error.code === 'ERR_NETWORK') {
+            errorsForm.form = 'Ошибка сети';
+            return;
+          }
           errorHandler(error.response as TErroResponse);
         }
       } finally {

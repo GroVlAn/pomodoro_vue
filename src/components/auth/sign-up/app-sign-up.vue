@@ -205,6 +205,10 @@ export default defineComponent({
         console.log(error);
 
         if (error instanceof AxiosError) {
+          if (error.code === 'ERR_NETWORK') {
+            errors.form = 'Ошибка сети';
+            return;
+          }
           errorHandler(error.response as TErroResponse);
         }
       } finally {

@@ -56,6 +56,7 @@ import TopNavBar from '../menu/top-nav-bar.vue';
 import { TLink } from '../menu/types';
 import { globalStore } from '@/shared/api/store/store';
 import { userLogout } from './service';
+import router from '@/router';
 
 export default defineComponent({
   setup() {
@@ -77,6 +78,7 @@ export default defineComponent({
         globalStore.userId = null;
       } finally {
         globalStore.isLoading = false;
+        router.replace('/');
       }
     };
 

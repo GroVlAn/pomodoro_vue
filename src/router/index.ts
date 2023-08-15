@@ -3,6 +3,7 @@ import MainPage from '../views/mainPage/main-page.vue';
 import StatisticsPage from '../views/statistics/statistics-page.vue';
 import SignIn from '../views/auth/sign-in.vue';
 import SignUp from '../views/auth/sign-up.vue';
+import { globalStore } from '@/shared/api/store/store';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -31,6 +32,20 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((to) => {
+  if (!globalStore.userId) {
+    if (to.name == 'statistics') {
+      router.replace('/');
+      return false;
+    }
+  } else {
+    if (to.name == 'sign-in' || to.name == 'sign-in') {
+      router.replace('/');
+      return false;
+    }
+  }
 });
 
 export default router;

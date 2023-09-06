@@ -38,8 +38,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref, watch } from 'vue';
-import { prettyTime } from '../../shared/api/helpers/timeHelper';
-import { TEventNextSegment } from './types';
+import { prettyTime } from '../../../shared/api/helpers/timeHelper';
+import { TEventNextSegment } from '../../../entity/timer';
 
 export default defineComponent({
   props: {

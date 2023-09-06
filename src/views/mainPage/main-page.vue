@@ -9,7 +9,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import AppPomodoro from '../../components/timer/app-pomodoro.vue';
+import AppPomodoro from '../../components/pomodoro/app-pomodoro.vue';
 
 export default defineComponent({
   setup() {

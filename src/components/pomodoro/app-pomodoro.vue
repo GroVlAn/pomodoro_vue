@@ -16,15 +16,16 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 
-import { SegmetnsTime } from './segmentsTime';
+import { AppTimer } from '@/features/pomodoro/';
+import { AppTimerSegments } from '@/features/pomodoro/';
+import { AppTimerAnimation } from '@/features/pomodoro/';
 
-import PomodoroTimer from '../../components/timer/pomodoro-timer.vue';
-import PomodoroSegments from '../../components/timer/pomodoro-segments.vue';
+import { TEventNextSegment } from '@/entity/timer';
 import { timeToSecond } from '@/shared/api/helpers/timeHelper';
-import { globalStore } from '@/shared/api/store/store';
+
 import { segmetns } from './data';
-import { TEventNextSegment } from './types';
-import AppTimerAnimation from './app-timer-animation.vue';
+import { SegmetnsTime } from '@/entity/timer';
+import { globalStore } from '@/shared/api/store/store';
 
 export default defineComponent({
   setup() {
@@ -80,8 +81,8 @@ export default defineComponent({
     };
   },
   components: {
-    'pomodoro-timer': PomodoroTimer,
-    'pomodoro-segments': PomodoroSegments,
+    'pomodoro-timer': AppTimer,
+    'pomodoro-segments': AppTimerSegments,
     'app-timer-animation': AppTimerAnimation,
   },
 });

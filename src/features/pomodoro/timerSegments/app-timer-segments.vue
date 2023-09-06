@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { PropType, defineComponent } from 'vue';
-import { TSegment } from './types';
+import { TSegment } from '../../../entity/timer';
 
 export default defineComponent({
   props: {

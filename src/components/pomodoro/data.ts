@@ -1,4 +1,4 @@
-import { TSegment } from './types';
+import { TSegment } from '../../entity/timer';
 
 export const segmetns: TSegment[] = [
   {
